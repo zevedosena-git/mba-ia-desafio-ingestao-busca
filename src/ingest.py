@@ -73,7 +73,3 @@ def run_ingest() -> None:
                 else:
                     raise e
     print("Processamento concluído com sucesso!")
-
-
-if __name__ == "__main__":
-    run_ingest()

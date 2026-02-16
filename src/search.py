@@ -1,6 +1,9 @@
 """
 Estrutura do texto de contexto usado no chat (prompt e formatação dos trechos).
+Utiliza ChatPromptTemplate do LangChain para integração via LCEL (pipe).
 """
+
+from langchain_core.prompts import ChatPromptTemplate
 
 PROMPT_TEMPLATE = """
 CONTEXTO:
@@ -30,5 +33,4 @@ RESPONDA A "PERGUNTA DO USUÁRIO"
 """
 # Placeholders: {contexto} = trechos do documento; {pergunta} = pergunta do usuário.
 
-CONTEXT_SEPARATOR = "\n\n---\n\n"
-# Separador usado entre trechos de documento ao montar o texto de contexto para o prompt.
+search_prompt = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)

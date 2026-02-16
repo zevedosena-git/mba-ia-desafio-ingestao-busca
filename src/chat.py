@@ -1,16 +1,18 @@
 import os
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
-from langchain_core.messages import HumanMessage
+from langchain_core.runnables import RunnableLambda
+from langchain_core.output_parsers import StrOutputParser
 from langchain_postgres import PGVector
 
-from search import PROMPT_TEMPLATE, CONTEXT_SEPARATOR
+from search import search_prompt
 from ingest import run_ingest
 
 load_dotenv()
 
 LLM_MODEL = os.getenv("GOOGLE_LLM_MODEL", "gemini-2.5-flash-lite")
 K_RESULTS = 10
+CONTEXT_SEPARATOR = "\n\n---\n\n"
 
 
 def _get_store() -> PGVector:
@@ -77,6 +79,14 @@ def main() -> None:
         model=LLM_MODEL,
         google_api_key=os.getenv("GOOGLE_API_KEY"),
     )
+
+    chain = (
+        RunnableLambda(lambda q: {"contexto": get_relevant_context(q, k=K_RESULTS), "pergunta": q})
+        | search_prompt
+        | llm
+        | StrOutputParser()
+    )
+
     print("Chat (baseado no documento). Digite 'sair' para encerrar.\n")
 
     while True:
@@ -91,10 +101,8 @@ def main() -> None:
             print("Até logo.")
             break
 
-        contexto = get_relevant_context(pergunta, k=K_RESULTS)
-        prompt = PROMPT_TEMPLATE.format(contexto=contexto, pergunta=pergunta)
-        msg = llm.invoke([HumanMessage(content=prompt)])
-        print(f"\nAssistente: {msg.content}\n")
+        resposta = chain.invoke(pergunta)
+        print(f"\nAssistente: {resposta}\n")
 
 
 if __name__ == "__main__":
