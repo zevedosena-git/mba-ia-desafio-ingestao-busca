@@ -73,29 +73,19 @@ exercicioPGvector/
 └── requirements.txt
 ```
 
-### 5. Executar o ingest (processar o PDF e gerar embeddings)
-
-**Execute da raiz do projeto:**
-
-```bash
-python src/ingest.py
-```
-
-Este script irá:
-- Carregar o `document.pdf` da raiz
-- Dividir em chunks de texto
-- Gerar embeddings usando Google Gemini
-- Armazenar no PGVector
-
-**Nota:** Se encontrar erro 429 (quota excedida), o script aguarda 60 segundos e tenta novamente automaticamente.
-
-### 6. Executar o chat (fazer perguntas sobre o documento)
+### 5. Executar o chat (fazer perguntas sobre o documento)
 
 **Execute da raiz do projeto:**
 
 ```bash
 python src/chat.py
 ```
+
+Será validados se as configurações foram preenchidas.
+
+Inicialmente verifica que o ingestion foi feito, caso contrário irá executar o processo antes de liberar o uso do chat.
+
+**Nota:** Se encontrar erro 429 (quota excedida), o script aguarda 60 segundos e tenta novamente automaticamente.
 
 O chat irá:
 - Buscar trechos relevantes do documento usando busca semântica
